@@ -15,6 +15,8 @@ import { RedisService } from 'src/redis/redis.service';
 import { md5 } from 'src/utils';
 import { Permission } from './entities/permission.entity';
 import { Role } from './entities/role.entity';
+import { LoginUserDto } from './dto/login-user.dto';
+import { LoginUserVo } from './vo/login-user.to';
 @Injectable()
 export class UserService {
   private logger = new Logger();
@@ -23,7 +25,7 @@ export class UserService {
   @InjectRepository(Role)
   private roleRepository: Repository<User>;
   @InjectRepository(Permission)
-  private permissionRepository: Repository<User>;
+  private permissionRepository: Repository<Permission>;
   @Inject(RedisService)
   private redisService: RedisService;
   async initData() {
@@ -97,23 +99,48 @@ export class UserService {
     }
   }
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
+  async login(loginUserDto: LoginUserDto, isAdmin: boolean) {
+    const user = await this.userRepository.findOne({
+      where: {
+        username: loginUserDto.username,
+        isAdmin,
+      },
+      relations: ['roles', 'roles.permissions'],
+    });
+    console.log('user-------', user);
 
-  findAll() {
-    return `This action returns all user`;
-  }
+    if (!user) {
+      throw new HttpException('user not existed', HttpStatus.BAD_REQUEST);
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
+    if (user.password !== md5(loginUserDto.password)) {
+      throw new HttpException(
+        'password is not correct',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const vo = new LoginUserVo();
+    vo.userInfo = {
+      id: user.id,
+      username: user.username,
+      nickName: user.nickName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      headPic: user.headPic,
+      createTime: user.createTime.getTime(),
+      isFrozen: user.isFrozen,
+      isAdmin: user.isAdmin,
+      roles: user.roles.map((item) => item.name),
+      permissions: user.roles.reduce((arr, item) => {
+        item.permissions.forEach((permission) => {
+          if (!arr.includes(permission)) {
+            arr.push(permission);
+          }
+        });
+        return arr;
+      }, []),
+    };
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    return vo;
   }
 }
