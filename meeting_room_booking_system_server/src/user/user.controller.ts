@@ -29,7 +29,11 @@ export class UserController {
   register(@Body() registerUser: RegisterUserDto) {
     return this.userService.register(registerUser);
   }
-
+  @Get('init-data')
+  async initData() {
+    await this.userService.initData();
+    return 'done';
+  }
   @Get('register-captcha')
   async captcha(@Query('address') address: string) {
     const code = Math.random().toString().slice(2, 8);
