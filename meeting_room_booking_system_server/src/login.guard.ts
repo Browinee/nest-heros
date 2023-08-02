@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { Permission } from './user/entities/permission.entity';
+import { ALLOW_ANON } from './decorators/allow-anon.decorator';
 
 interface JwtUserData {
   userId: number;
@@ -33,14 +34,19 @@ export class LoginGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const request: Request = context.switchToHttp().getRequest();
-    const requiredLogin = this.reflector.getAllAndOverride('require-login', [
-      context.getClass(),
+    const allowAnon = this.reflector.getAllAndOverride<boolean>(ALLOW_ANON, [
       context.getHandler(),
+      context.getClass(),
     ]);
-    if (!requiredLogin) {
-      return true;
-    }
+    if (allowAnon) return true;
+    // const requiredLogin = this.reflector.getAllAndOverride('require-login', [
+    //   context.getClass(),
+    //   context.getHandler(),
+    // ]);
+    // if (!requiredLogin) {
+    //   return true;
+    // }
+    const request: Request = context.switchToHttp().getRequest();
     const authorization = request.headers.authorization;
     if (!authorization) {
       throw new UnauthorizedException('please login.');

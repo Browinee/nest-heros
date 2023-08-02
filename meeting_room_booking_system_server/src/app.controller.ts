@@ -2,6 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { SetMetadata } from '@nestjs/common';
 import { RequireLogin, RequirePermission } from './custom.decorator';
+import { AllowAnon } from './decorators/allow-anon.decorator';
 
 @Controller()
 export class AppController {
@@ -13,7 +14,7 @@ export class AppController {
   }
 
   @Get('aaa')
-  @RequireLogin()
+  @AllowAnon()
   @RequirePermission('ccc')
   aaaa() {
     return 'aaa';
