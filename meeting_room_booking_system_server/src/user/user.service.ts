@@ -1,21 +1,19 @@
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { RegisterUserDto } from './dto/register-user.dto';
 import {
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   Logger,
-  Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
 import { RedisService } from 'src/redis/redis.service';
 import { md5 } from 'src/utils';
+import { Repository } from 'typeorm';
+import { LoginUserDto } from './dto/login-user.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
 import { Permission } from './entities/permission.entity';
 import { Role } from './entities/role.entity';
-import { LoginUserDto } from './dto/login-user.dto';
+import { User } from './entities/user.entity';
 import { LoginUserVo } from './vo/login-user.to';
 @Injectable()
 export class UserService {
@@ -142,5 +140,29 @@ export class UserService {
     };
 
     return vo;
+  }
+  async findUserById(userId: number, isAdmin: boolean) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+        isAdmin,
+      },
+      relations: ['roles', 'roles.permissions'],
+    });
+
+    return {
+      id: user.id,
+      username: user.username,
+      isAdmin: user.isAdmin,
+      roles: user.roles.map((item) => item.name),
+      permissions: user.roles.reduce((arr, item) => {
+        item.permissions.forEach((permission) => {
+          if (arr.indexOf(permission) === -1) {
+            arr.push(permission);
+          }
+        });
+        return arr;
+      }, []),
+    };
   }
 }
