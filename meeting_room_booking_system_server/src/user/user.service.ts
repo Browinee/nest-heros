@@ -196,4 +196,14 @@ export class UserService {
       return 'fail to update password';
     }
   }
+
+  async freezeUserById(userId: number) {
+    const user = await this.userRepository.findOneBy({
+      id: userId,
+    });
+
+    user.isFrozen = true;
+
+    await this.userRepository.save(user);
+  }
 }

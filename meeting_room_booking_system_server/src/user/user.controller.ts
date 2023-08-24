@@ -18,6 +18,7 @@ import { AllowAnon } from 'src/decorators/allow-anon.decorator';
 import { UserInfo } from 'src/decorators/user-info.decorator';
 import { UserDetailVo } from './vo/user-info.vo';
 import { UpdateUserPasswordDto } from './dto/update-password.dto';
+import { get } from 'http';
 @Controller('user')
 export class UserController {
   @Inject(EmailService)
@@ -205,5 +206,12 @@ export class UserController {
     );
 
     return 'send captcha to your email';
+  }
+  @Get('freeze')
+  async freeze(@Query('id') userId: number) {
+    console.log('userid', userId);
+
+    await this.userService.freezeUserById(userId);
+    return 'success';
   }
 }
