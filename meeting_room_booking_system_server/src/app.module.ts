@@ -64,6 +64,7 @@ import { PermissionGuard } from './permission.guard';
   controllers: [AppController],
   providers: [
     AppService,
+    // NOTE: use global guard
     { provide: APP_GUARD, useClass: LoginGuard },
     { provide: APP_GUARD, useClass: PermissionGuard },
   ],

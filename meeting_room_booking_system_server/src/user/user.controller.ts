@@ -14,6 +14,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
+import { AllowAnon } from 'src/decorators/allow-anon.decorator';
 @Controller('user')
 export class UserController {
   @Inject(EmailService)
@@ -34,11 +35,13 @@ export class UserController {
     return this.userService.register(registerUser);
   }
   @Get('init-data')
+  @AllowAnon()
   async initData() {
     await this.userService.initData();
     return 'done';
   }
   @Get('register-captcha')
+  @AllowAnon()
   async captcha(@Query('address') address: string) {
     const code = Math.random().toString().slice(2, 8);
 
@@ -53,6 +56,7 @@ export class UserController {
   }
 
   @Post('login')
+  @AllowAnon()
   async userLogin(@Body() loginUser: LoginUserDto) {
     const vo = await this.userService.login(loginUser, false);
     vo.accessToken = this.jwtService.sign(
@@ -80,6 +84,7 @@ export class UserController {
   }
 
   @Post('admin/login')
+  @AllowAnon()
   async adminLogin(@Body() loginUser: LoginUserDto) {
     const vo = await this.userService.login(loginUser, true);
     return vo;
