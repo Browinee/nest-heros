@@ -7,6 +7,7 @@ import {
   Inject,
   Post,
   Query,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import { EmailService } from 'src/email/email.service';
 import { RedisService } from 'src/redis/redis.service';
@@ -176,6 +177,8 @@ export class UserController {
   @Get('info')
   async info(@UserInfo('userId') userId: number) {
     const user = await this.userService.findUserDetailById(userId);
+    // NOTE: 或是在this.userRepository.findOne新增select
+    // ex: select: ['id', 'username', 'nickName', 'email', 'phoneNumber', 'isFrozen', 'headPic', 'createTime'],
     const vo = new UserDetailVo();
     vo.id = user.id;
     vo.email = user.email;
@@ -211,8 +214,6 @@ export class UserController {
   }
   @Get('freeze')
   async freeze(@Query('id') userId: number) {
-    console.log('userid', userId);
-
     await this.userService.freezeUserById(userId);
     return 'success';
   }
@@ -221,6 +222,7 @@ export class UserController {
   async list(
     @Query(
       'pageNo',
+      new DefaultValuePipe(1),
       new ParseIntPipe({
         exceptionFactory() {
           throw new BadRequestException('pageNo should be number');
@@ -230,6 +232,7 @@ export class UserController {
     pageNo: number,
     @Query(
       'pageSize',
+      new DefaultValuePipe(5),
       new ParseIntPipe({
         exceptionFactory() {
           throw new BadRequestException('pageSize should be number');
@@ -237,7 +240,16 @@ export class UserController {
       }),
     )
     pageSize: number,
+    @Query('username') username: string,
+    @Query('nickName') nickName: string,
+    @Query('email') email: string,
   ) {
-    return await this.userService.findUsersByPage(pageNo, pageSize);
+    return await this.userService.findUsers(
+      username,
+      nickName,
+      email,
+      pageNo,
+      pageSize,
+    );
   }
 }
