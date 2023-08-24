@@ -19,6 +19,8 @@ import { UserInfo } from 'src/decorators/user-info.decorator';
 import { UserDetailVo } from './vo/user-info.vo';
 import { UpdateUserPasswordDto } from './dto/update-password.dto';
 import { get } from 'http';
+import { ParseIntPipe } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 @Controller('user')
 export class UserController {
   @Inject(EmailService)
@@ -213,5 +215,29 @@ export class UserController {
 
     await this.userService.freezeUserById(userId);
     return 'success';
+  }
+
+  @Get('list')
+  async list(
+    @Query(
+      'pageNo',
+      new ParseIntPipe({
+        exceptionFactory() {
+          throw new BadRequestException('pageNo should be number');
+        },
+      }),
+    )
+    pageNo: number,
+    @Query(
+      'pageSize',
+      new ParseIntPipe({
+        exceptionFactory() {
+          throw new BadRequestException('pageSize should be number');
+        },
+      }),
+    )
+    pageSize: number,
+  ) {
+    return await this.userService.findUsersByPage(pageNo, pageSize);
   }
 }
