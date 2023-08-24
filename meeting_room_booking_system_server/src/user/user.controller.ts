@@ -15,6 +15,8 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
 import { AllowAnon } from 'src/decorators/allow-anon.decorator';
+import { UserInfo } from 'src/decorators/user-info.decorator';
+import { UserDetailVo } from './vo/user-info.vo';
 @Controller('user')
 export class UserController {
   @Inject(EmailService)
@@ -165,5 +167,10 @@ export class UserController {
     } catch (e) {
       throw new UnauthorizedException('invalid token, please login again.');
     }
+  }
+
+  @Get('info')
+  async info(@UserInfo('userId') userId: number) {
+    return this.userService.findUserDetailById(userId);
   }
 }
