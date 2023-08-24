@@ -15,6 +15,7 @@ import { Permission } from './entities/permission.entity';
 import { Role } from './entities/role.entity';
 import { User } from './entities/user.entity';
 import { LoginUserVo } from './vo/login-user.to';
+import { UpdateUserPasswordDto } from './dto/update-password.dto';
 @Injectable()
 export class UserService {
   private logger = new Logger();
@@ -105,7 +106,6 @@ export class UserService {
       },
       relations: ['roles', 'roles.permissions'],
     });
-    console.log('user-------', user);
 
     if (!user) {
       throw new HttpException('user not existed', HttpStatus.BAD_REQUEST);
@@ -173,5 +173,27 @@ export class UserService {
       },
     });
     return user;
+  }
+  async updatePassword(userId: number, passwordDto: UpdateUserPasswordDto) {
+    const captcha = await this.redisService.get(`captcha_${passwordDto.email}`);
+    if (!captcha) {
+      throw new HttpException('captcha is overdue', HttpStatus.BAD_REQUEST);
+    }
+    if (passwordDto.captcha !== captcha) {
+      throw new HttpException('captcha is invalid', HttpStatus.BAD_REQUEST);
+    }
+    const foundUser = await this.userRepository.findOneBy({
+      id: userId,
+    });
+
+    foundUser.password = md5(passwordDto.password);
+
+    try {
+      await this.userRepository.save(foundUser);
+      return 'update password successfully';
+    } catch (e) {
+      this.logger.error(e, UserService);
+      return 'fail to update password';
+    }
   }
 }

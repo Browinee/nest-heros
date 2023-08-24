@@ -24,7 +24,6 @@ export class User {
   @Column({
     length: 50,
     comment: 'password',
-    select: false,
   })
   password: string;
   @Column({

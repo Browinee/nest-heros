@@ -17,6 +17,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AllowAnon } from 'src/decorators/allow-anon.decorator';
 import { UserInfo } from 'src/decorators/user-info.decorator';
 import { UserDetailVo } from './vo/user-info.vo';
+import { UpdateUserPasswordDto } from './dto/update-password.dto';
 @Controller('user')
 export class UserController {
   @Inject(EmailService)
@@ -47,14 +48,14 @@ export class UserController {
   async captcha(@Query('address') address: string) {
     const code = Math.random().toString().slice(2, 8);
 
-    await this.redisService.set(`captcha_${address}`, code, 5 * 60);
+    await this.redisService.set(`captcha_${address}`, code, 10 * 60);
 
-    await this.emailService.sendMail({
-      to: address,
-      subject: 'Your verification code',
-      html: `<p>Your verification code is  ${code}</p>`,
-    });
-    return 'uccess';
+    // await this.emailService.sendMail({
+    //   to: address,
+    //   subject: 'Your verification code',
+    //   html: `<p>Your verification code is  ${code}</p>`,
+    // });
+    return 'success';
   }
 
   @Post('login')
@@ -171,6 +172,38 @@ export class UserController {
 
   @Get('info')
   async info(@UserInfo('userId') userId: number) {
-    return this.userService.findUserDetailById(userId);
+    const user = await this.userService.findUserDetailById(userId);
+    const vo = new UserDetailVo();
+    vo.id = user.id;
+    vo.email = user.email;
+    vo.username = user.username;
+    vo.headPic = user.headPic;
+    vo.phoneNumber = user.phoneNumber;
+    vo.nickName = user.nickName;
+    vo.createTime = user.createTime;
+    vo.isFrozen = user.isFrozen;
+
+    return vo;
+  }
+
+  @Post(['update_password', 'admin/update_password'])
+  async updatePassword(
+    @UserInfo('userId') userId: number,
+    @Body() passwordDto: UpdateUserPasswordDto,
+  ) {
+    return await this.userService.updatePassword(userId, passwordDto);
+  }
+
+  @Get('update/captcha')
+  async updateCaptcha(@Query('address') address: string) {
+    const code = Math.random().toString().slice(2, 8);
+
+    await this.redisService.set(
+      `update_user_captcha_${address}`,
+      code,
+      10 * 60,
+    );
+
+    return 'send captcha to your email';
   }
 }
