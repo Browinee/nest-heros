@@ -11,6 +11,7 @@ import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { Permission } from './user/entities/permission.entity';
 import { ALLOW_ANON } from './decorators/allow-anon.decorator';
+import { UnLoginException } from './unlogin.filter';
 
 interface JwtUserData {
   userId: number;
@@ -49,6 +50,7 @@ export class LoginGuard implements CanActivate {
     const request: Request = context.switchToHttp().getRequest();
     const authorization = request.headers.authorization;
     if (!authorization) {
+      // throw new UnLoginException('please login.');
       throw new UnauthorizedException('please login.');
     }
     try {
