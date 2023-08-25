@@ -22,6 +22,18 @@ import { UpdateUserPasswordDto } from './dto/update-password.dto';
 import { get } from 'http';
 import { ParseIntPipe } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { HttpStatus } from '@nestjs/common';
+import { LoginUserVo } from './vo/login-user.to';
+import { RefreshTokenVo } from './vo/refresh-token.vo';
+
+@ApiTags('User management')
 @Controller('user')
 export class UserController {
   @Inject(EmailService)
@@ -37,6 +49,17 @@ export class UserController {
   private configService: ConfigService;
   constructor(private readonly userService: UserService) {}
 
+  @ApiBody({ type: RegisterUserDto })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'captcha is overdue/captcha is invalid/user existed',
+    type: String,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'register successfully/fail to register',
+    type: String,
+  })
   @Post('register')
   register(@Body() registerUser: RegisterUserDto) {
     return this.userService.register(registerUser);
@@ -47,6 +70,19 @@ export class UserController {
     await this.userService.initData();
     return 'done';
   }
+
+  @ApiQuery({
+    name: 'address',
+    type: String,
+    description: 'email',
+    required: true,
+    example: 'xxx@xx.com',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'send successfully',
+    type: String,
+  })
   @Get('register-captcha')
   @AllowAnon()
   async captcha(@Query('address') address: string) {
@@ -64,6 +100,19 @@ export class UserController {
 
   @Post('login')
   @AllowAnon()
+  @ApiBody({
+    type: LoginUserDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'password is not correct/user is not existed',
+    type: String,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'userinfo and token',
+    type: LoginUserVo,
+  })
   async userLogin(@Body() loginUser: LoginUserDto) {
     const vo = await this.userService.login(loginUser, false);
     vo.accessToken = this.jwtService.sign(
@@ -98,6 +147,22 @@ export class UserController {
   }
 
   @Get('refresh')
+  @ApiQuery({
+    name: 'refreshToken',
+    type: String,
+    description: 'refresh token',
+    required: true,
+    example: 'xxxxxxxxyyyyyyyyzzzzz',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'token is invalid, please login',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'refresh successfully',
+    type: RefreshTokenVo,
+  })
   async refresh(@Query('refreshToken') refreshToken: string) {
     try {
       const data = this.jwtService.verify(refreshToken);
@@ -126,11 +191,12 @@ export class UserController {
             this.configService.get('jwt_refresh_token_expres_time') || '7d',
         },
       );
+      const vo = new RefreshTokenVo();
 
-      return {
-        access_token,
-        refresh_token,
-      };
+      vo.access_token = access_token;
+      vo.refresh_token = refresh_token;
+
+      return vo;
     } catch (e) {
       throw new UnauthorizedException('invalid token, please login again.');
     }
@@ -175,6 +241,12 @@ export class UserController {
   }
 
   @Get('info')
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'refresh successfully',
+    type: UserDetailVo,
+  })
   async info(@UserInfo('userId') userId: number) {
     const user = await this.userService.findUserDetailById(userId);
     // NOTE: 或是在this.userRepository.findOne新增select
