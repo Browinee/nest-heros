@@ -27,10 +27,12 @@ const queue: PendingTask[] = [];
 
 axiosInstance.interceptors.response.use(
   (response) => {
+    console.log("interceptors response", response);
+
     return response;
   },
   async (error) => {
-    let { data, config } = error.response;
+    const { data, config } = error.response;
 
     if (refreshing) {
       return new Promise((resolve) => {

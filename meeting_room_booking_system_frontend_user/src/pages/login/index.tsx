@@ -1,6 +1,7 @@
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Checkbox, Form, Input, message } from "antd";
 import "./login.css";
 import { useCallback } from "react";
+import { login } from "../../api";
 
 interface LoginUser {
   username: string;
@@ -18,9 +19,21 @@ const layout2 = {
 };
 
 export function Login() {
-  const onFinish = useCallback((values: LoginUser) => {
-    console.log(values);
-  }, []);
+  const onFinish = async (values: LoginUser) => {
+    const res = await login(values.username, values.password);
+
+    const { code, message: msg, data } = res.data;
+    if (code === 201 || code === 200) {
+      message.success("登录成功");
+
+      localStorage.setItem("access_token", data.accessToken);
+      localStorage.setItem("refresh_token", data.refreshToken);
+      localStorage.setItem("user_info", JSON.stringify(data.userInfo));
+    } else {
+      message.error(data || "系统繁忙，请稍后再试");
+    }
+  };
+
   return (
     <div id="login-container">
       <h1>meeting room booking systems</h1>
