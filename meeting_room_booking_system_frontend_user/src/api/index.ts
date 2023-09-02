@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { RegisterUser } from "../page/register/Register";
-import { UpdatePassword } from "../page/update_password/UpdatePassword";
-import { UserInfo } from "../page/update_info/UpdateInfo";
+import { RegisterUser } from "../pages/register";
+import { UpdatePassword } from "../pages/updatePassword";
+import { UserInfo } from "../pages/updateInfo";
 import { message } from "antd";
 
 const axiosInstance = axios.create({
