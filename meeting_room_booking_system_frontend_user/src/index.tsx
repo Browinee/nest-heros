@@ -5,50 +5,28 @@ import {
   Link,
   Outlet,
 } from "react-router-dom";
-
-function Aaa() {
-  return <div>aaa</div>;
-}
-
-function Bbb() {
-  return <div>bbb</div>;
-}
-
-function Layout() {
-  return (
-    <div>
-      <div>
-        <Link to="/aaa">to aaa</Link>
-      </div>
-      <div>
-        <Link to="/bbb">to bbb</Link>
-      </div>
-      <div>
-        <Outlet />
-      </div>
-    </div>
-  );
-}
-
-function ErrorPage() {
-  return <div>error</div>;
-}
+import { Register } from "./pages/register";
+import { Login } from "./pages/login";
+import { UpdatePassword } from "./pages/updatePassword";
+import { ErrorPage } from "./pages/error";
 
 const routes = [
   {
     path: "/",
-    element: <Layout />,
+    element: <div>index</div>,
     errorElement: <ErrorPage />,
-    children: [
-      {
-        path: "aaa",
-        element: <Aaa />,
-      },
-      {
-        path: "bbb",
-        element: <Bbb />,
-      },
-    ],
+  },
+  {
+    path: "login",
+    element: <Login />,
+  },
+  {
+    path: "register",
+    element: <Register />,
+  },
+  {
+    path: "update_password",
+    element: <UpdatePassword />,
   },
 ];
 const router = createBrowserRouter(routes);
