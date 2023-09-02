@@ -96,7 +96,8 @@ export async function registerCaptcha(email: string) {
 }
 
 export async function register(registerUser: RegisterUser) {
-  return await axiosInstance.post("/user/register", registerUser);
+  const { confirmPassword, ...rest } = registerUser;
+  return await axiosInstance.post("/user/register", rest);
 }
 
 export async function updatePasswordCaptcha(email: string) {
