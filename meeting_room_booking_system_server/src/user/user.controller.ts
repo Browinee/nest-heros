@@ -61,6 +61,7 @@ export class UserController {
     type: String,
   })
   @Post('register')
+  @AllowAnon()
   register(@Body() registerUser: RegisterUserDto) {
     return this.userService.register(registerUser);
   }
