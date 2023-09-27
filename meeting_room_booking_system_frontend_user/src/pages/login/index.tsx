@@ -9,7 +9,7 @@ interface LoginUser {
 }
 
 const layout1 = {
-  labelCol: { span: 4 },
+  labelCol: { span: 6 },
   wrapperCol: { span: 20 },
 };
 
