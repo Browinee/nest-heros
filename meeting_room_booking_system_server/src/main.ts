@@ -14,6 +14,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new InvokeRecordInterceptor());
   // app.useGlobalFilters(new UnloginFilter());
   app.useGlobalFilters(new CustomExceptionFilter());
+  app.enableCors();
   const configService = app.get(ConfigService);
   const config = new DocumentBuilder()
     .setTitle('meeting room booking system')
