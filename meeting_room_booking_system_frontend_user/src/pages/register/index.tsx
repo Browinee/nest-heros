@@ -77,8 +77,8 @@ export function Register() {
         </Form.Item>
 
         <Form.Item
-          label="nickname"
-          name="nickname"
+          label="nickName"
+          name="nickName"
           rules={[{ required: true, message: "Please enter nickName" }]}
         >
           <Input />
