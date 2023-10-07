@@ -6,7 +6,7 @@ import { message } from "antd";
 
 const axiosInstance = axios.create({
   baseURL: "http://localhost:3009/",
-  timeout: 3000,
+  timeout: 10000,
 });
 
 axiosInstance.interceptors.request.use(function (config) {
@@ -24,7 +24,14 @@ interface PendingTask {
 }
 let refreshing = false;
 const queue: PendingTask[] = [];
+axiosInstance.interceptors.request.use(function (config) {
+  const accessToken = localStorage.getItem("access_token");
 
+  if (accessToken) {
+    config.headers.authorization = "Bearer " + accessToken;
+  }
+  return config;
+});
 axiosInstance.interceptors.response.use(
   (response) => {
     console.log("interceptors response", response);
@@ -32,8 +39,9 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
-    const { data, config } = error.response;
+    console.log("api error", error);
 
+    const { data, config } = error.response;
     if (refreshing) {
       return new Promise((resolve) => {
         queue.push({
@@ -45,9 +53,8 @@ axiosInstance.interceptors.response.use(
 
     if (data.code === 401 && !config.url.includes("/user/refresh")) {
       refreshing = true;
-
+      debugger;
       const res = await refreshToken();
-
       refreshing = false;
 
       if (res.status === 200) {
@@ -75,8 +82,8 @@ async function refreshToken() {
       refresh_token: localStorage.getItem("refresh_token"),
     },
   });
-  localStorage.setItem("access_token", res.data.access_token || "");
-  localStorage.setItem("refresh_token", res.data.refresh_token || "");
+  localStorage.setItem("access_token", res.data.data.access_token || "");
+  localStorage.setItem("refresh_token", res.data.data.refresh_token || "");
   return res;
 }
 

@@ -32,6 +32,7 @@ import {
 import { HttpStatus } from '@nestjs/common';
 import { LoginUserVo } from './vo/login-user.to';
 import { RefreshTokenVo } from './vo/refresh-token.vo';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('User management')
 @Controller('user')
@@ -120,6 +121,7 @@ export class UserController {
       {
         userId: vo.userInfo.id,
         username: vo.userInfo.username,
+        email: vo.userInfo.email,
         roles: vo.userInfo.roles,
         permissions: vo.userInfo.permissions,
       },
@@ -144,6 +146,30 @@ export class UserController {
   @AllowAnon()
   async adminLogin(@Body() loginUser: LoginUserDto) {
     const vo = await this.userService.login(loginUser, true);
+    vo.accessToken = this.jwtService.sign(
+      {
+        userId: vo.userInfo.id,
+        username: vo.userInfo.username,
+        email: vo.userInfo.email,
+        roles: vo.userInfo.roles,
+        permissions: vo.userInfo.permissions,
+      },
+      {
+        expiresIn:
+          this.configService.get('jwt_access_token_expires_time') || '30m',
+      },
+    );
+
+    vo.refreshToken = this.jwtService.sign(
+      {
+        userId: vo.userInfo.id,
+      },
+      {
+        expiresIn:
+          this.configService.get('jwt_refresh_token_expres_time') || '7d',
+      },
+    );
+
     return vo;
   }
 
@@ -164,7 +190,8 @@ export class UserController {
     description: 'refresh successfully',
     type: RefreshTokenVo,
   })
-  async refresh(@Query('refreshToken') refreshToken: string) {
+  @AllowAnon()
+  async refresh(@Query('refresh_token') refreshToken: string) {
     try {
       const data = this.jwtService.verify(refreshToken);
 
@@ -174,6 +201,7 @@ export class UserController {
         {
           userId: user.id,
           username: user.username,
+          email: user.email,
           roles: user.roles,
           permissions: user.permissions,
         },
@@ -274,9 +302,16 @@ export class UserController {
     // return await this.userService.updatePassword(userId, passwordDto);
     return await this.userService.updatePassword(passwordDto);
   }
+  @Post(['update', 'admin/update'])
+  async update(
+    @UserInfo('userId') userId: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return await this.userService.update(userId, updateUserDto);
+  }
 
   @Get('update/captcha')
-  async updateCaptcha(@Query('address') address: string) {
+  async updateCaptcha(@UserInfo('email') address: string) {
     const code = Math.random().toString().slice(2, 8);
 
     await this.redisService.set(

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Inject,
@@ -16,6 +17,7 @@ import { Role } from './entities/role.entity';
 import { User } from './entities/user.entity';
 import { LoginUserVo } from './vo/login-user.to';
 import { UpdateUserPasswordDto } from './dto/update-password.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 @Injectable()
 export class UserService {
   private logger = new Logger();
@@ -154,6 +156,7 @@ export class UserService {
       id: user.id,
       username: user.username,
       isAdmin: user.isAdmin,
+      email: user.email,
       roles: user.roles.map((item) => item.name),
       permissions: user.roles.reduce((arr, item) => {
         item.permissions.forEach((permission) => {
@@ -253,5 +256,37 @@ export class UserService {
       users,
       totalCount,
     };
+  }
+  async update(userId: number, updateUserDto: UpdateUserDto) {
+    const captcha = await this.redisService.get(
+      `update_user_captcha_${updateUserDto.email}`,
+    );
+
+    if (!captcha) {
+      throw new BadRequestException('captcha is overdue');
+    }
+
+    if (updateUserDto.captcha !== captcha) {
+      throw new BadRequestException('captcha is not correct');
+    }
+
+    const foundUser = await this.userRepository.findOneBy({
+      id: userId,
+    });
+
+    if (updateUserDto.nickName) {
+      foundUser.nickName = updateUserDto.nickName;
+    }
+    if (updateUserDto.headPic) {
+      foundUser.headPic = updateUserDto.headPic;
+    }
+
+    try {
+      await this.userRepository.save(foundUser);
+      return 'Update user info successfully.';
+    } catch (e) {
+      this.logger.error(e, UserService);
+      return 'Fail to update user info.';
+    }
   }
 }

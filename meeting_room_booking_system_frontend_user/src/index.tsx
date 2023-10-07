@@ -9,12 +9,20 @@ import { Register } from "./pages/register";
 import { Login } from "./pages/login";
 import { UpdatePassword } from "./pages/updatePassword";
 import { ErrorPage } from "./pages/error";
+import { Layout } from "./layout";
+import { UpdateInfo } from "./pages/updateInfo";
 
 const routes = [
   {
     path: "/",
-    element: <div>index</div>,
+    element: <Layout />,
     errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "update_info",
+        element: <UpdateInfo />,
+      },
+    ],
   },
   {
     path: "login",

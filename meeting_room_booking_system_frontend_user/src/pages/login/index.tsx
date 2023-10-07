@@ -20,6 +20,8 @@ const layout2 = {
 };
 
 export function Login() {
+  const navigate = useNavigate();
+
   const onFinish = async (values: LoginUser) => {
     const res = await login(values.username, values.password);
 
@@ -30,6 +32,9 @@ export function Login() {
       localStorage.setItem("access_token", data.accessToken);
       localStorage.setItem("refresh_token", data.refreshToken);
       localStorage.setItem("user_info", JSON.stringify(data.userInfo));
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
     } else {
       message.error(data || "System is busy. Try later");
     }
