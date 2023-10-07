@@ -3,8 +3,10 @@ import { useForm } from "antd/es/form/Form";
 import "./update_password.css";
 import { useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { updatePassword, updatePasswordCaptcha } from "../../api";
 
 export interface UpdatePassword {
+  username: string;
   email: string;
   captcha: string;
   password: string;
@@ -24,10 +26,34 @@ export function UpdatePassword() {
   const [form] = useForm();
   const navigate = useNavigate();
   const onFinish = useCallback(async (values: UpdatePassword) => {
-    console.log(values);
+    if (values.password !== values.confirmPassword) {
+      return message.error("password and confirmPassword not the same.");
+    }
+    const res = await updatePassword(values);
+
+    const { message: msg, data } = res.data;
+
+    if (res.status === 201 || res.status === 200) {
+      message.success("Update password successfully");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+    } else {
+      message.error(data || "try later");
+    }
   }, []);
   const sendCaptcha = useCallback(async function () {
-    console.log("send captcha");
+    const address = form.getFieldValue("email");
+    if (!address) {
+      return message.error("Please enter email");
+    }
+
+    const res = await updatePasswordCaptcha(address);
+    if (res.status === 201 || res.status === 200) {
+      message.success(res.data.data);
+    } else {
+      message.error("Try later");
+    }
   }, []);
   return (
     <div id="updatePassword-container">
@@ -39,6 +65,13 @@ export function UpdatePassword() {
         colon={false}
         autoComplete="off"
       >
+        <Form.Item
+          label="username"
+          name="username"
+          rules={[{ required: true, message: "Please enter username" }]}
+        >
+          <Input />
+        </Form.Item>
         <Form.Item
           label="email"
           name="email"

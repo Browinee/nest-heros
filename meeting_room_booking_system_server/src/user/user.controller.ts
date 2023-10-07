@@ -265,12 +265,14 @@ export class UserController {
     return vo;
   }
 
+  @AllowAnon()
   @Post(['update_password', 'admin/update_password'])
   async updatePassword(
-    @UserInfo('userId') userId: number,
+    // @UserInfo('userId') userId: number,
     @Body() passwordDto: UpdateUserPasswordDto,
   ) {
-    return await this.userService.updatePassword(userId, passwordDto);
+    // return await this.userService.updatePassword(userId, passwordDto);
+    return await this.userService.updatePassword(passwordDto);
   }
 
   @Get('update/captcha')
@@ -285,6 +287,35 @@ export class UserController {
 
     return 'send captcha to your email';
   }
+
+  @ApiQuery({
+    name: 'email',
+    description: 'email',
+    type: String,
+  })
+  @ApiResponse({
+    type: String,
+    description: 'Send successfully',
+  })
+  @Get('update_password/captcha')
+  @AllowAnon()
+  async updatePasswordCaptcha(@Query('address') address: string) {
+    const code = Math.random().toString().slice(2, 8);
+
+    await this.redisService.set(
+      `update_password_captcha_${address}`,
+      code,
+      10 * 60,
+    );
+
+    // await this.emailService.sendMail({
+    //   to: address,
+    //   subject: 'Change your password',
+    //   html: `<p>Your verification code is ${code}</p>`,
+    // });
+    return 'Send successfully';
+  }
+
   @Get('freeze')
   async freeze(@Query('id') userId: number) {
     await this.userService.freezeUserById(userId);

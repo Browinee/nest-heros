@@ -2,6 +2,7 @@ import { Button, Checkbox, Form, Input, message } from "antd";
 import "./login.css";
 import { useCallback } from "react";
 import { login } from "../../api";
+import { Link, useNavigate } from "react-router-dom";
 
 interface LoginUser {
   username: string;
@@ -51,13 +52,13 @@ export function Login() {
           name="password"
           rules={[{ required: true, message: "Please enter password." }]}
         >
-          <Input.Password placeholder="justin123456" />
+          <Input.Password placeholder="justin1234567" />
         </Form.Item>
 
         <Form.Item {...layout2}>
           <div className="links">
-            <a href="">create account</a>
-            <a href="">forget password</a>
+            <Link to="/register">create account</Link>
+            <Link to="/update_password">forget password</Link>
           </div>
         </Form.Item>
 

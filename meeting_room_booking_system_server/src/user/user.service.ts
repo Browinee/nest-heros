@@ -174,18 +174,24 @@ export class UserService {
     });
     return user;
   }
-  async updatePassword(userId: number, passwordDto: UpdateUserPasswordDto) {
-    const captcha = await this.redisService.get(`captcha_${passwordDto.email}`);
+  // async updatePassword(userId: number, passwordDto: UpdateUserPasswordDto) {
+  async updatePassword(passwordDto: UpdateUserPasswordDto) {
+    const captcha = await this.redisService.get(
+      `update_password_captcha_${passwordDto.email}`,
+    );
     if (!captcha) {
       throw new HttpException('captcha is overdue', HttpStatus.BAD_REQUEST);
     }
+
     if (passwordDto.captcha !== captcha) {
       throw new HttpException('captcha is invalid', HttpStatus.BAD_REQUEST);
     }
     const foundUser = await this.userRepository.findOneBy({
-      id: userId,
+      username: passwordDto.username,
     });
-
+    if (foundUser.email !== passwordDto.email) {
+      throw new HttpException('Wrong email', HttpStatus.BAD_REQUEST);
+    }
     foundUser.password = md5(passwordDto.password);
 
     try {
