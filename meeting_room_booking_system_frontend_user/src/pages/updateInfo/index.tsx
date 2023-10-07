@@ -5,6 +5,7 @@ import "./index.css";
 import { useNavigate } from "react-router-dom";
 import { getUserInfo, updateInfo, updateUserInfoCaptcha } from "../../api";
 
+import { HeadPicUpload } from "./HeadPicUpload";
 export interface UserInfo {
   headPic: string;
   nickName: string;
@@ -71,10 +72,10 @@ export function UpdateInfo() {
           label="headPic"
           name="headPic"
           rules={[{ required: true, message: "Please enter headPic!" }]}
+          shouldUpdate
         >
-          <Input />
+          <HeadPicUpload></HeadPicUpload>
         </Form.Item>
-
         <Form.Item
           label="nickName"
           name="nickName"

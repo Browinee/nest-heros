@@ -53,7 +53,6 @@ axiosInstance.interceptors.response.use(
 
     if (data.code === 401 && !config.url.includes("/user/refresh")) {
       refreshing = true;
-      debugger;
       const res = await refreshToken();
       refreshing = false;
 
