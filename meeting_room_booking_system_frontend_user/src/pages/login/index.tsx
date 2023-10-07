@@ -43,7 +43,7 @@ export function Login() {
           name="username"
           rules={[{ required: true, message: "Please enter username." }]}
         >
-          <Input />
+          <Input placeholder="justin" />
         </Form.Item>
 
         <Form.Item
@@ -51,7 +51,7 @@ export function Login() {
           name="password"
           rules={[{ required: true, message: "Please enter password." }]}
         >
-          <Input.Password />
+          <Input.Password placeholder="justin123456" />
         </Form.Item>
 
         <Form.Item {...layout2}>
