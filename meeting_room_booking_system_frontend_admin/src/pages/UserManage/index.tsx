@@ -1,10 +1,12 @@
 import { Badge, Button, Form, Image, Input, Table, message } from "antd";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import "./index.css";
 import { data } from "./constants";
-import { userSearch } from "../../api";
+import { freeze, userSearch } from "../../api";
 import { ColumnsType } from "antd/es/table";
 import { UserSearchResult } from "./types";
+import { useForm } from "antd/es/form/Form";
+
 interface SearchUser {
   username: string;
   nickName: string;
@@ -12,14 +14,26 @@ interface SearchUser {
 }
 
 export function UserManage() {
+  const [forceNum, forceUpdate] = useReducer((x) => x + 1, 0);
+  async function freezeUser(id: number) {
+    const res = await freeze(id);
+
+    const { data } = res.data;
+    if (res.status === 201 || res.status === 200) {
+      message.success("Freeze successfully");
+      forceUpdate();
+    } else {
+      message.error(data || "try later");
+    }
+  }
   const columns: ColumnsType<UserSearchResult> = useMemo(
     () => [
       {
-        title: "用户名",
+        title: "username",
         dataIndex: "username",
       },
       {
-        title: "头像",
+        title: "headPic",
         dataIndex: "headPic",
         render: (value) => {
           return value ? (
@@ -30,16 +44,35 @@ export function UserManage() {
         },
       },
       {
-        title: "昵称",
+        title: "nickName",
         dataIndex: "nickName",
       },
       {
-        title: "邮箱",
+        title: "email",
         dataIndex: "email",
       },
       {
-        title: "注册时间",
+        title: "createTime",
         dataIndex: "createTime",
+      },
+      {
+        title: "status",
+        dataIndex: "isFrozen",
+        render: (_, record) =>
+          record.isFrozen ? <Badge status="success">Frozen</Badge> : "",
+      },
+      {
+        title: "Action",
+        render: (_, record) => (
+          <a
+            href="#"
+            onClick={() => {
+              freezeUser(record.id);
+            }}
+          >
+            Freeze
+          </a>
+        ),
       },
     ],
     []
@@ -70,14 +103,14 @@ export function UserManage() {
       message.error(data || "try later");
     }
   }, []);
-
+  const [form] = useForm();
   useEffect(() => {
     searchUser({
-      username: "",
-      email: "",
-      nickName: "",
+      username: form.getFieldValue("username"),
+      email: form.getFieldValue("email"),
+      nickName: form.getFieldValue("nickName"),
     });
-  }, [pageNo, pageSize]);
+  }, [pageNo, pageSize, forceNum]);
 
   const changePage = useCallback(function (pageNo: number, pageSize: number) {
     setPageNo(pageNo);
@@ -86,7 +119,13 @@ export function UserManage() {
   return (
     <div id="userManage-container">
       <div className="userManage-form">
-        <Form onFinish={searchUser} name="search" layout="inline" colon={false}>
+        <Form
+          form={form}
+          onFinish={searchUser}
+          name="search"
+          layout="inline"
+          colon={false}
+        >
           <Form.Item label="username" name="username">
             <Input />
           </Form.Item>
