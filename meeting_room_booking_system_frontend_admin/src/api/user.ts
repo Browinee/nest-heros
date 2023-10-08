@@ -1,3 +1,4 @@
+import { UserInfo } from "../pages/InfoModify";
 import { axiosInstance } from "./base";
 
 export async function login(username: string, password: string) {
@@ -30,4 +31,16 @@ export async function freeze(id: number) {
       id,
     },
   });
+}
+
+export async function getUserInfo() {
+  return await axiosInstance.get("/user/info");
+}
+
+export async function updateInfo(data: UserInfo) {
+  return await axiosInstance.post("/user/admin/update", data);
+}
+
+export async function updateUserInfoCaptcha() {
+  return await axiosInstance.get("/user/update/captcha");
 }
