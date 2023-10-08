@@ -3,7 +3,7 @@ import { useForm } from "antd/es/form/Form";
 import "./index.css";
 import { useCallback, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getUserInfo, updatePasswordCaptcha } from "../../api";
+import { getUserInfo, updatePassword, updatePasswordCaptcha } from "../../api";
 
 export interface UpdatePassword {
   email: string;
@@ -33,7 +33,6 @@ export function PasswordModify() {
 
     const res = await updatePassword({
       ...values,
-      username: form.getFieldValue("username"),
     });
 
     const { message: msg, data } = res.data;
