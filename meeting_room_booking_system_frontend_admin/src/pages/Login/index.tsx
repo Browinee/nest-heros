@@ -2,7 +2,7 @@ import { Button, Checkbox, Form, Input, message } from "antd";
 import "./login.css";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../api";
+import { login } from "../../api";
 
 interface LoginUser {
   username: string;
@@ -38,7 +38,7 @@ export function Login() {
 
   return (
     <div id="login-container">
-      <h1>Meeting room booking system</h1>
+      <h1>Meeting room booking system-admin</h1>
       <Form {...layout1} onFinish={onFinish} colon={false} autoComplete="off">
         <Form.Item
           label="username"
