@@ -2,7 +2,12 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
-import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
+import {
+  Navigate,
+  Outlet,
+  RouterProvider,
+  createBrowserRouter,
+} from "react-router-dom";
 import { Layout } from "./layout";
 import { ErrorPage } from "./error";
 import { UserManage } from "./pages/UserManage";
@@ -27,6 +32,7 @@ const routes = [
         path: "/",
         element: <Menu />,
         children: [
+          { index: true, element: <Navigate to="/meeting_room_manage" /> },
           {
             path: "meeting_room_manage",
             element: <MeetingRoomManage />,
