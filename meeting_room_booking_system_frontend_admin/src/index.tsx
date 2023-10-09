@@ -11,6 +11,9 @@ import { Menu } from "./pages/Menu";
 import { ModifyMenu } from "./pages/ModifyMenu";
 import { InfoModify } from "./pages/InfoModify";
 import { PasswordModify } from "./pages/PasswordModify";
+import { MeetingRoomManage } from "./pages/MeetingRoomManage";
+import { BookingManage } from "./pages/BookingManage";
+import { Statistics } from "./pages/Statistics";
 
 const routes = [
   {
@@ -25,8 +28,24 @@ const routes = [
         element: <Menu />,
         children: [
           {
+            path: "meeting_room_manage",
+            element: <MeetingRoomManage />,
+          },
+          {
             path: "user_manage",
             element: <UserManage />,
+          },
+          {
+            path: "meeting_room_manage",
+            element: <MeetingRoomManage />,
+          },
+          {
+            path: "booking_manage",
+            element: <BookingManage />,
+          },
+          {
+            path: "statistics",
+            element: <Statistics />,
           },
         ],
       },
