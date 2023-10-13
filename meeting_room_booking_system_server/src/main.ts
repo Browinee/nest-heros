@@ -2,8 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { FormatResponseInterceptor } from './format-response.interceptor';
-import { InvokeRecordInterceptor } from './invoke-record.interceptor';
+import { FormatResponseInterceptor } from './interceptors/format-response.interceptor';
+import { InvokeRecordInterceptor } from './interceptors/invoke-record.interceptor';
 import { UnloginFilter } from './filters/unlogin.filter';
 import { CustomExceptionFilter } from './filters/custom-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -13,7 +13,6 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new FormatResponseInterceptor());
   app.useGlobalInterceptors(new InvokeRecordInterceptor());
-  // app.useGlobalFilters(new UnloginFilter());
   app.useGlobalFilters(new CustomExceptionFilter());
   app.enableCors();
   const configService = app.get(ConfigService);

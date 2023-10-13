@@ -1,4 +1,4 @@
-import { LoginGuard } from './login.guard';
+import { LoginGuard } from './guards/login.guard';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
