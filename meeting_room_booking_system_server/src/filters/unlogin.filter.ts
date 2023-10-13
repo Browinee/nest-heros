@@ -23,7 +23,7 @@ export class UnloginFilter implements ExceptionFilter {
       .json({
         code: HttpStatus.UNAUTHORIZED,
         message: 'fail',
-        data: exception.message || '用户未登录',
+        data: exception.message || '用户未登入',
       })
       .end();
   }

@@ -31,6 +31,7 @@ specifiers:
   prettier: ^3.0.3
   redis: ^4.6.10
   reflect-metadata: ^0.1.13
+  request-ip: ^3.3.0
   rimraf: ^5.0.5
   rxjs: ^7.8.1
   source-map-support: ^0.5.21
@@ -59,6 +60,7 @@ dependencies:
   nodemailer: 6.9.5
   redis: 4.6.10
   reflect-metadata: 0.1.13
+  request-ip: 3.3.0
   rimraf: 5.0.5
   rxjs: 7.8.1
   typeorm: 0.3.17_a6csnskn6m562yt75ok66nvucm
@@ -4860,6 +4862,10 @@ packages:
     resolution: {integrity: sha512-PV0dzCYDNfRi1jCDbJzpW7jNNDRuCOG/jI5ctQcGKt/clZD+YcPS3yIlWuTJMmESC8aevCFmWJy5wjAFgNqN6w==}
     engines: {node: '>=0.10'}
     dev: true
+
+  /request-ip/3.3.0:
+    resolution: {integrity: sha512-cA6Xh6e0fDBBBwH77SLJaJPBmD3nWVAcF9/XAcsrIHdjhFzFiB5aNQFytdjCGPezU3ROwrR11IddKAM08vohxA==}
+    dev: false
 
   /require-directory/2.1.1:
     resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}
