@@ -29,6 +29,7 @@ specifiers:
   joi: ^17.11.0
   mysql2: ^3.6.1
   nodemailer: ^6.9.5
+  passport: ^0.6.0
   prettier: ^3.0.3
   redis: ^4.6.10
   reflect-metadata: ^0.1.13
@@ -51,7 +52,7 @@ dependencies:
   '@nestjs/core': 10.2.7_5hwp5tvaqax6kxnclaqixhass4
   '@nestjs/jwt': 10.1.1_@nestjs+common@10.2.7
   '@nestjs/mapped-types': 2.0.2_gsrj5jd2nerde66yigs3s54dza
-  '@nestjs/passport': 10.0.2_@nestjs+common@10.2.7
+  '@nestjs/passport': 10.0.2_yw3bstwoxlqhnanr4ci4ho3t44
   '@nestjs/platform-express': 10.2.7_pyni7wzdujkbvmfeegxedz3mmy
   '@nestjs/swagger': 7.1.13_r66oaqnqqdspg6hj3z2zvxnjjy
   '@nestjs/typeorm': 10.0.0_meg34owmnmrgqy4lunzlyw2g7y
@@ -60,6 +61,7 @@ dependencies:
   joi: 17.11.0
   mysql2: 3.6.1
   nodemailer: 6.9.5
+  passport: 0.6.0
   redis: 4.6.10
   reflect-metadata: 0.1.13
   request-ip: 3.3.0
@@ -1051,13 +1053,14 @@ packages:
       reflect-metadata: 0.1.13
     dev: false
 
-  /@nestjs/passport/10.0.2_@nestjs+common@10.2.7:
+  /@nestjs/passport/10.0.2_yw3bstwoxlqhnanr4ci4ho3t44:
     resolution: {integrity: sha512-od31vfB2z3y05IDB5dWSbCGE2+pAf2k2WCBinNuTTOxN0O0+wtO1L3kawj/aCW3YR9uxsTOVbTDwtwgpNNsnjQ==}
     peerDependencies:
       '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0
       passport: ^0.4.0 || ^0.5.0 || ^0.6.0
     dependencies:
       '@nestjs/common': 10.2.7_j3td4gnlgk75ora6o6suo62byy
+      passport: 0.6.0
     dev: false
 
   /@nestjs/platform-express/10.2.7_pyni7wzdujkbvmfeegxedz3mmy:
@@ -4640,6 +4643,20 @@ packages:
     resolution: {integrity: sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==}
     engines: {node: '>= 0.8'}
 
+  /passport-strategy/1.0.0:
+    resolution: {integrity: sha512-CB97UUvDKJde2V0KDWWB3lyf6PC3FaZP7YxZ2G8OAtn9p4HI9j9JLP9qjOGZFvyl8uwNT8qM+hGnz/n16NI7oA==}
+    engines: {node: '>= 0.4.0'}
+    dev: false
+
+  /passport/0.6.0:
+    resolution: {integrity: sha512-0fe+p3ZnrWRW74fe8+SvCyf4a3Pb2/h7gFkQ8yTJpAO50gDzlfjZUZTO1k5Eg9kUct22OxHLqDZoKUWRHOh9ug==}
+    engines: {node: '>= 0.4.0'}
+    dependencies:
+      passport-strategy: 1.0.0
+      pause: 0.0.1
+      utils-merge: 1.0.1
+    dev: false
+
   /path-exists/4.0.0:
     resolution: {integrity: sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==}
     engines: {node: '>=8'}
@@ -4680,6 +4697,10 @@ packages:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
     engines: {node: '>=8'}
     dev: true
+
+  /pause/0.0.1:
+    resolution: {integrity: sha512-KG8UEiEVkR3wGEb4m5yZkVCzigAD+cVEJck2CzYZO37ZGJfctvVptVO192MwrtPhzONn6go8ylnOdMhKqi4nfg==}
+    dev: false
 
   /picocolors/1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}

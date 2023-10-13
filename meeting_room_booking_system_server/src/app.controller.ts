@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { SetMetadata } from '@nestjs/common';
-import { RequireLogin, RequirePermission } from './custom.decorator';
+import { RequireLogin, RequirePermission } from './decorators/custom.decorator';
 import { AllowAnon } from './decorators/allow-anon.decorator';
 
 @Controller()

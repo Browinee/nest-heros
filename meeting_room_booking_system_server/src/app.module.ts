@@ -12,9 +12,10 @@ import { EmailModule } from './email/email.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
-import { PermissionGuard } from './permission.guard';
+import { PermissionGuard } from './guards/permission.guard';
 import { MeetingRoomModule } from './meeting-room/meeting-room.module';
 import { MeetingRoom } from './meeting-room/entities/meeting-room.entity';
+import { DatabaseModule } from './database/database.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -35,7 +36,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
     ConfigModule.forRoot({
       isGlobal: true,
       // NOTE: If a variable is found in multiple files, the first one takes precedence.
-      envFilePath: [envFilePath, '.env'],
+      envFilePath: ['.env'],
       // validationSchema: Joi.object({
       //   DB: Joi.string().ip(),
       //   DB_HOST: Joi.string().ip(),
@@ -47,32 +48,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
       //   LOG_ON: Joi.bool(),
       // }),
     }),
-    TypeOrmModule.forRootAsync({
-      useFactory(configService: ConfigService) {
-        console.log(
-          "configService.get('mysql_server_host'),",
-          configService.get('mysql_server_host'),
-        );
-
-        return {
-          type: 'mysql',
-          host: configService.get('mysql_server_host'),
-          port: configService.get('mysql_server_port'),
-          username: configService.get('mysql_server_username'),
-          password: configService.get('mysql_server_password'),
-          database: configService.get('mysql_server_database'),
-          synchronize: true,
-          logging: true,
-          entities: [User, Role, Permission, MeetingRoom],
-          poolSize: 10,
-          connectorPackage: 'mysql2',
-          extra: {
-            authPlugin: 'sha256_password',
-          },
-        };
-      },
-      inject: [ConfigService],
-    }),
+    DatabaseModule,
     UserModule,
     RedisModule,
     EmailModule,
