@@ -15,6 +15,9 @@ import { APP_GUARD } from '@nestjs/core';
 import { PermissionGuard } from './permission.guard';
 import { MeetingRoomModule } from './meeting-room/meeting-room.module';
 import { MeetingRoom } from './meeting-room/entities/meeting-room.entity';
+
+const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
+
 @Module({
   imports: [
     JwtModule.registerAsync({
@@ -31,7 +34,18 @@ import { MeetingRoom } from './meeting-room/entities/meeting-room.entity';
     }),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      // NOTE: If a variable is found in multiple files, the first one takes precedence.
+      envFilePath: [envFilePath, '.env'],
+      // validationSchema: Joi.object({
+      //   DB: Joi.string().ip(),
+      //   DB_HOST: Joi.string().ip(),
+      //   DB_PORT: Joi.number().default(3306),
+      //   DB_USER: Joi.string(),
+      //   DB_PASSWORD: Joi.string(),
+      //   DB_NAME: Joi.string(),
+      //   LOG_LEVEL: Joi.string(),
+      //   LOG_ON: Joi.bool(),
+      // }),
     }),
     TypeOrmModule.forRootAsync({
       useFactory(configService: ConfigService) {
